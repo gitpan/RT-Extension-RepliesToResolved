@@ -9,30 +9,69 @@ DESCRIPTION
     "Thank you" messages re-open tickets and mess with statistics.
     People keep sending new questions into old tickets.
 
-RT 4.0.7 required or you have to patch RT
-    You can fetch patch from github:
+PATCHES
+    If you have RT 4.0.6 or earlier, you need this patch:
 
     <https://github.com/bestpractical/rt/commit/139f5da162ceb64bf33a31d7013e
     8b98d6866d18.patch>
 
-BETA
-    It's very simple module to give an example on how to do it. I hope to
-    see patches that improve it.
+    If you have RT 4.0.8 or earlier, you also need this patch.
+
+    <https://github.com/bestpractical/rt/commit/22099a1b5a515870be82429cd787
+    2d4c68485a9b.patch>
 
 INSTALLATION
-        perl Makefile.PL
-        make
-        make install
+    perl Makefile.PL
+    make
+    make install
+        May need root permissions
 
-    Register plugin in RT_SiteConfig.pm:
+    make initdb
+        Only run this the first time you install this module.
 
-        Set(@Plugins, qw(
-            RT::Extension::RepliesToResolved
-            ... other plugins ...
-        ));
+        If you run this twice, you may end up with duplicate data in your
+        database.
 
-AUTHOR
-    Ruslan Zakirov <ruz@bestpractical.com>
+        If you are upgrading this module, check for upgrading instructions
+        in case changes need to be made to your database.
+
+    Edit your /opt/rt4/etc/RT_SiteConfig.pm
+        Add this line:
+
+            Set(@Plugins, qw(RT::Extension::RepliesToResolved));
+
+        or add "RT::Extension::RepliesToResolved" to your existing @Plugins
+        line.
+
+    Clear your mason cache
+            rm -rf /opt/rt4/var/mason_data/obj
+
+    Restart your webserver
+
+CONFIGURATION
+    Configuration for this extension is defined in
+
+        /opt/rt4/local/plugins/RT-Extension-RepliesToResolved/etc/RepliesToResolved_Config.pm
+
+    You can read about the options in that file and then set your own
+    options in your RT_SiteConfig.pm file.
+
+    By default, after 7 days, this module will intercept mail to resolved
+    tickets and force the creation of a new ticket. It then creates a
+    RefersTo link between the two tickets. Each of these (time, statuses,
+    link) is configurable.
+
+AUTHORS
+        Ruslan Zakirov E<lt>ruz@bestpractical.comE<gt>
+        Tim Cutts E<lt>tjrc@sanger.ac.ukE<gt>
+
+BUGS
+    All bugs should be reported via email to
+    bug-RT-Extension-RepliesToResolved@rt.cpan.org
+    <mailto:bug-RT-Extension-RepliesToResolved@rt.cpan.org> or via the web
+    at rt.cpan.org
+    <http://rt.cpan.org/Public/Dist/Display.html?Name=RT-Extension-RepliesTo
+    Resolved>.
 
 LICENSE
     Under the same terms as perl itself.
